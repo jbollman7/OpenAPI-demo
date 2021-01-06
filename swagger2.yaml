@@ -1,0 +1,156 @@
+swagger: '2.0'
+
+info:
+  title: Customer API
+  description: Customer API. Provides RESTful operations
+  version: 0.0.0
+  termsOfService: terms
+  contact:
+    name: joe
+    url: https://factioninc.com
+    email: joe@factioninc
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  
+paths:
+  /customer:
+    get:
+      summary: reads a customer's data
+      operationId: getCustomer
+      description: "Retrieves a customer from the system"
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: customerId
+          description: pass an optional customer id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "search results match and return      successfully"
+          schema:
+            $ref: "#/definitions/Customer"
+            
+        404:
+          description: employee with this id does not exist.
+    post:
+      summary: adds a new customer
+      operationId: addCustomer
+      description: Add a new cusotmer to the system.
+      produces:
+        - text/plain
+      
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: the new customer added in JSON
+          required: true
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        '200':
+          description: "successful opeation"
+          schema:
+            type: integer
+        '405':
+          description: Invalid Input
+      
+  /customer/{customerId}:
+    put:
+      summary: update existing customer
+      operationId: updateCustomer
+      description: Updates existing cusotmer within the system.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: the udpated customer data int the
+          required: true
+          schema:
+            $ref: "#/definitions/Customer"
+        - in: path
+          name: customerId
+          description: the id of the customer to update
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Success
+        404:
+          description: Customer Not Found
+        500:
+          description: Interanl Server Error
+    delete:
+      summary: deletes existing customer
+      operationId: deleteCustomer
+      description: Deletes existing cusotmer within the system.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: customerId
+          description: the id of the customer to delete
+          required: true
+          type: integer
+      responses:
+        200:
+          description: The customer was deleted
+          schema:
+            $ref: "#/definitions/Customer"
+        404:
+          description: Invalid Input
+        500:
+          description: Internal Server Error
+      
+definitions:
+  Customer:
+    type: object
+    properties: 
+      customerId:
+        type: integer
+      accountValue:
+        type: number
+      customerName:
+        type: string
+      active:
+        type: boolean
+      address:
+        type: object
+        properties:
+          name:
+            type: string
+          street:
+            type: string
+          city:
+            type: string
+          state:
+            type: string
+          zip:
+            type: string
+      contacts:
+        type: array
+        items: 
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            phone:
+              type: string
+
+host: api.globalmantics.com
+basePath: /cmr/v1
+schemes:
+  - http
+  - https
+securityDefinitions:
+  BasicAuth:
+    type: basic
+security:
+  - BasicAuth: []

@@ -1,0 +1,165 @@
+openapi: 3.0.2
+info:
+  title: Customer API
+  description: Customer API. Provides RESTful operations
+  version: 0.0.0-oas3
+  termsOfService: terms
+  contact:
+    name: joe
+    url: 'https://factioninc.com'
+    email: joe@factioninc
+  license:
+    name: MIT
+    url: 'http://opensource.org/licenses/MIT'
+paths:
+  /customer:
+    get:
+      summary: reads a customer's data
+      operationId: getCustomer
+      description: Retrieves a customer from the system
+      parameters:
+        - in: query
+          name: customerId
+          description: pass an optional customer id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: search results match and return      successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: employee with this id does not exist.
+    post:
+      summary: adds a new customer
+      operationId: addCustomer
+      description: Add a new cusotmer to the system.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        description: the new customer added in JSON
+        required: true
+      responses:
+        '200':
+          description: successful opeation
+          content:
+            text/plain:
+              schema:
+                type: integer
+        '405':
+          description: Invalid Input
+  '/customer/{customerId}':
+    put:
+      summary: update existing customer
+      operationId: updateCustomer
+      description: Updates existing cusotmer within the system.
+      parameters:
+        - in: path
+          name: customerId
+          description: the id of the customer to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        description: the udpated customer data int the
+        required: true
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Customer Not Found
+        '500':
+          description: Interanl Server Error
+    delete:
+      summary: deletes existing customer
+      operationId: deleteCustomer
+      description: Deletes existing cusotmer within the system.
+      parameters:
+        - in: path
+          name: customerId
+          description: the id of the customer to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The customer was deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Invalid Input
+        '500':
+          description: Internal Server Error
+servers:
+  - url: 'https://api.globalmantics.com/cmr/v1'
+    description: Internal Production
+  - url: 'https://staging.globalmantics.com/cmr/v1'
+    description: Internal Staging
+  - url: 'https://development.globalmantics.com/cmr/v1'
+    description: Internal Development
+  - url: 'https://{customerId}.globalmantics.com/cmr/{version}'
+    description: Customer Production
+    variables:
+      customerId:
+        default: demo
+        description: the customer id for subdomain
+      version:
+        default: v1
+        enum:
+          - v1
+          - v2
+          - v3-beta
+security:
+  - BasicAuth: []
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: integer
+        accountValue:
+          type: number
+        customerName:
+          type: string
+        active:
+          type: boolean
+        address:
+          type: object
+          properties:
+            name:
+              type: string
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+        contacts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              phone:
+                type: string
